@@ -37,7 +37,7 @@ wget https://huggingface.co/WenqiDong/Coin3D-v1/resolve/main/model.ckpt
 ```bash
 Coin3D
 |-- ckpt
-    |-- ViT-L-14.ckpt
+    |-- ViT-L-14.pt
     |-- model.ckpt
 ```
 2. (Optional) Make sure the input image has a white background. Here we refer to [SyncDreamer](https://github.com/liuyuan-pal/SyncDreamer) and use the following tools for foreground segmentation. Predict foreground mask as the alpha channel. We use [Paint3D](https://apps.microsoft.com/store/detail/paint-3d/9NBLGGH5FV99) to segment the foreground object interactively. 
@@ -73,12 +73,12 @@ Explanation:
 4. Run a NeuS or a NeRF for 3D reconstruction.
 ```bash
 # train a neus
-python train_renderer.py -i output/custom/0.png \
+python3 train_renderer.py -i output/custom/0.png \
                          -n custom-neus \
                          -b configs/neus.yaml \
                          -l output/renderer 
 # train a nerf
-python train_renderer.py -i output/custom/0.png \
+python3 train_renderer.py -i output/custom/0.png \
                          -n custom-nerf \
                          -b configs/nerf.yaml \
                          -l output/renderer
