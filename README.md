@@ -11,12 +11,11 @@
 - [ ] Interactive workflow.
 - [ ] Training data.
 - [ ] Blender Addons
-- [ ] Reconstruction using volume-SDS loss
 
 
 
 ### Preparation for inference
-1. Install packages in `requirements.txt`. We test our model on a 80G A100 GPU with 11.8 CUDA and 2.0.1 pytorch.
+1. Install packages in `requirements.txt`. We test our model on a A100-80G GPU with 11.8 CUDA and 2.0.1 pytorch.
 ```angular2html
 conda create -n coin3d
 conda activate coin3d
