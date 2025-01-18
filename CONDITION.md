@@ -56,6 +56,18 @@ Apply ControlNet Parameters Explanation:
 - `start_percent` Specifies the point in the generation process (as a percentage) when ControlNet starts to take effect. For example, a value of 0.3 means ControlNet starts influencing at 30% of the process. **Normally this parameter is set to 0.**
 - `end_percent` Specifies the point in the generation process (as a percentage) when ControlNet stops taking effect. For example, a value of 0.7 means ControlNet stops influencing at 70% of the process.
 
+**ComfyUI API**
+
+At the same time, you can also get the condition image through the ComfyUI API. Here is the example code based on the above [workflow](workflow/Coin3D_condition_workflow.json).
+
+First, you need to run ComfyUI
+```
+python3 main.py --port 6621
+```
+After that, run
+```
+python3 inference_comfyui_api.py
+```
 
 ### Acknowledgement
 We deeply appreciate the authors of the following repositories for generously sharing their code, which we have extensively utilized. Their contributions have been invaluable to our work, and we are grateful for their openness and willingness to share their expertise. Our project has greatly benefited from their efforts and dedication.
