@@ -28,8 +28,7 @@ class ControlSyncDreamerTrainData(SyncDreamerTrainData):
         self.input_dir = Path(input_dir)
         self.proxy_dir = Path(proxy_dir)
 
-        self.proxy_uids = read_pickle(uid_set_pkl)
-        # self.proxy_uids = ['0012053f094f4309808f52b3efb88977.txt']
+        self.proxy_uids = read_pickle(uid_set_pkl) # e.g. self.proxy_uids = ['0012053f094f4309808f52b3efb88977.txt']
         self.uids = [i.split('.')[0] for i in self.proxy_uids]
         assert len(self.proxy_uids) == len(self.uids)
         print('============= length of dataset %d =============' % len(self.uids))
@@ -74,8 +73,7 @@ class ControlSyncDreamerEvalData(Dataset):
         self.proxy_dir = Path(proxy_dir)
         self.crop_size = 20
 
-        self.proxy_uids = read_pickle(uid_set_pkl)
-        # self.proxy_uids = ['0012053f094f4309808f52b3efb88977.txt']
+        self.proxy_uids = read_pickle(uid_set_pkl) # e.g. self.proxy_uids = ['0012053f094f4309808f52b3efb88977.txt']
         self.uids = [i.split('.')[0] for i in self.proxy_uids]
         assert len(self.proxy_uids) == len(self.uids)
         print('============= length of dataset %d =============' % len(self.proxy_uids))

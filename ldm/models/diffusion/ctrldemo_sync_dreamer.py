@@ -179,6 +179,50 @@ class CtrlDemo(SyncMultiviewDiffusion):
         x_concat = x_input_
         return clip_embed_, frustum_volume_feats, x_concat
 
+    def training_step(self, batch):
+        B = batch['target_image'].shape[0]
+        time_steps = torch.randint(0, self.num_timesteps, (B,), device=self.device).long()
+
+        x, clip_embed, input_info = self.prepare(batch)
+        x_noisy, noise = self.add_noise(x, time_steps)  # B,N,4,H,W
+
+        N = self.view_num
+        target_index = torch.randint(0, N, (B, 1), device=self.device).long() # B, 1
+        v_embed = self.get_viewpoint_embedding(B, input_info['elevation']) # N,v_dim
+        proxy_ = input_info['proxy'].detach().clone()
+        t_embed = self.embed_time(time_steps)
+        spatial_volume = self.spatial_volume.construct_spatial_volume(x_noisy, t_embed, v_embed, self.poses, self.Ks, proxy=proxy_)
+        spatial_volume_params = {'poses': self.poses, 'Ks': self.Ks, 'target_indices': target_index}
+        clip_embed, volume_feats, x_concat = self.get_target_view_feats(input_info['x'], spatial_volume, clip_embed, t_embed, v_embed, target_index, spatial_volume_params=spatial_volume_params)
+
+        x_noisy_ = x_noisy[torch.arange(B)[:,None],target_index][:,0] # B,4,H,W
+        noise_predict = self.model(x_noisy_, time_steps, clip_embed, volume_feats, x_concat, is_train=True) # B,4,H,W
+
+        noise_target = noise[torch.arange(B)[:,None],target_index][:,0] # B,4,H,W
+        # loss simple for diffusion
+        loss_simple = torch.nn.functional.mse_loss(noise_target, noise_predict, reduction='none')
+        loss = loss_simple.mean()
+        self.log('sim', loss_simple.mean(), prog_bar=True, logger=True, on_step=True, on_epoch=True, rank_zero_only=True)
+
+        # log others
+        lr = self.optimizers().param_groups[0]['lr']
+        self.log('lr', lr, prog_bar=True, logger=True, on_step=True, on_epoch=False, rank_zero_only=True)
+        self.log("step", self.global_step, prog_bar=True, logger=True, on_step=True, on_epoch=False, rank_zero_only=True)
+        return loss
+
+    def configure_optimizers(self):
+        lr = self.learning_rate
+        print(f'setting learning rate to {lr:.4f} ...')
+        paras = []
+        paras.append({"params": self.spatial_volume.controlnet.parameters(), "lr": lr},)
+
+        opt = torch.optim.AdamW(paras, lr=lr)
+
+        scheduler = instantiate_from_config(self.scheduler_config)
+        print("Setting up LambdaLR scheduler...")
+        scheduler = [{'scheduler': LambdaLR(opt, lr_lambda=scheduler.schedule), 'interval': 'step', 'frequency': 1}]
+        return [opt], scheduler
+
 class CtrlDemoSampler:
     def __init__(self, model: CtrlDemo, scheduler_steps, scheduler_name='ddim', ddim_discretize="uniform", ddim_eta=1.0, latent_size=32):
         self.model = model
