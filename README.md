@@ -39,7 +39,8 @@ Coin3D
     |-- ViT-L-14.pt
     |-- model.ckpt
 ```
-2. (Optional) Make sure the input image has a white background. Here we refer to [SyncDreamer](https://github.com/liuyuan-pal/SyncDreamer) and use the following tools for foreground segmentation. Predict foreground mask as the alpha channel. We use [Paint3D](https://apps.microsoft.com/store/detail/paint-3d/9NBLGGH5FV99) to segment the foreground object interactively. 
+2. We provide a workflow that uses a custom mesh and text prompt to generate the input image. You can refer to [this instruction](CONDITION.md).
+3. (Optional) Make sure the input image has a white background. Here we refer to [SyncDreamer](https://github.com/liuyuan-pal/SyncDreamer) and use the following tools for foreground segmentation. Predict foreground mask as the alpha channel. We use [Paint3D](https://apps.microsoft.com/store/detail/paint-3d/9NBLGGH5FV99) to segment the foreground object interactively. 
 We also provide a script `foreground_segment.py` using `carvekit` to predict foreground masks and you need to first crop the object region before feeding it to `foreground_segment.py`. We may double check the predicted masks are correct or not.
 ```bash
 python3 foreground_segment.py --input <image-file-to-input> --output <image-file-in-png-format-to-output>
